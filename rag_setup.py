@@ -3,22 +3,26 @@ from langchain_community.document_loaders import TextLoader, UnstructuredPDFLoad
 from langchain_community.vectorstores import FAISS
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from dotenv import load_dotenv
 
-# 🔐 Set your Gemini API key
-os.environ["GOOGLE_API_KEY"] = "AIzaSyCBo44t6Sn6AbVbubeGxulQOlrAdbbi4ZU"  # Replace with real key
+# Loads .env file
+load_dotenv()  
 
-# 📥 Load legal document
-loader = TextLoader("data/terms_and_conditions.txt")  # Make sure this file exists!
+# Set your key from env
+os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
+
+# Load legal document
+loader = TextLoader("data/terms_and_conditions.txt")
 documents = loader.load()
 
-# 🧱 Split into chunks
+# Split into chunks
 splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 chunks = splitter.split_documents(documents)
 
-# 🧠 Create Gemini embeddings
+# Create Gemini embeddings
 embedding = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 
-# 📦 Store in FAISS
+# Store in FAISS
 vectorstore = FAISS.from_documents(chunks, embedding)
 vectorstore.save_local("faiss_index")
 
