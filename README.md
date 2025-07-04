@@ -15,6 +15,7 @@ legal-rag-bot/
 │ └── terms_and_conditions.txt
 ├── faiss_index/
 ├── rag_setup.py
+├── qa_system.py
 ├── requirements.txt
 └── README.md
 
@@ -40,4 +41,16 @@ legal-rag-bot/
     `python rag_setup.py`
 
 # legal-rag-bot
-Gemini-powered RAG system for legal document Q&amp;A
+
+Gemini-powered RAG system for legal document Q&A
+
+##  Ask Questions
+
+Run the Q&A system:
+
+```bash
+python qa_system.py
+
+Ask your legal question: What are the refund terms mentioned?
+```
+---
