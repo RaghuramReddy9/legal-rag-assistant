@@ -92,10 +92,12 @@ What are the refund terms mentioned in the agreement?
 
 Keep your `.env` file private. Do not commit API keys. Use `.gitignore` to keep secrets secure ✅
 
-📎 Author:
-Made by `Raghurameddy Thirumalareddy`
+##  Author
 
+**Raghuramreddy Thirumalareddy**
 
+- 🔗 [GitHub](https://github.com/RaghuramReddy9)
+- 💼 [LinkedIn](https://www.linkedin.com/in/raghuramreddy-ai)
 
 
 
