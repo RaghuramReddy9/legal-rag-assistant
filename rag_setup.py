@@ -1,29 +1,26 @@
 import os
-from langchain_community.document_loaders import TextLoader, UnstructuredPDFLoader
-from langchain_community.vectorstores import FAISS
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from dotenv import load_dotenv
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_community.vectorstores import FAISS
 
-# Loads .env file
-load_dotenv()  
+#  Save uploaded file locally 
+def save_uploaded_file(uploaded_file, save_dir="data"):
+    os.makedirs(save_dir, exist_ok=True)
+    file_path = os.path.join(save_dir, uploaded_file.name)
+    with open(file_path, "wb") as f:
+        f.write(uploaded_file.getbuffer())
+    return file_path
 
-# Set your key from env
-os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
+#  Process PDF → Split → Embed → Return FAISS
+def process_pdf_to_chunks(file_path):
+    loader = PyPDFLoader(file_path)
+    documents = loader.load()
 
-# Load legal document
-loader = TextLoader("data/terms_and_conditions.txt")
-documents = loader.load()
+    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+    chunks = splitter.split_documents(documents)
 
-# Split into chunks
-splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-chunks = splitter.split_documents(documents)
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+    vectorstore = FAISS.from_documents(chunks, embeddings)
 
-# Create Gemini embeddings
-embedding = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-
-# Store in FAISS
-vectorstore = FAISS.from_documents(chunks, embedding)
-vectorstore.save_local("faiss_index")
-
-print("✅ Vector index created and saved with Gemini embeddings.")
+    return vectorstore
