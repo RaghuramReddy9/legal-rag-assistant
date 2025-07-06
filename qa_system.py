@@ -41,10 +41,27 @@ Answer:
         chain_type_kwargs={"prompt": prompt}
     )
 
+
+def rank_chunks_by_keyword(chunks, keyword):
+    scores = {}
+    for i, chunk in enumerate(chunks):
+        if not hasattr(chunk, "page_content"):
+            continue  # skip invalid docs
+        count = chunk.page_content.lower().count(keyword.lower())
+        if count > 0:
+            scores[f"chunk_{i}"] = {
+                "text": chunk.page_content,
+                "score": count
+            }
+    ranked = dict(sorted(scores.items(), key=lambda item: item[1]["score"], reverse=True))
+    return ranked
+
+
 # Ask a question
 def ask_question(chain, question):
     result = chain.invoke({"query": question})
     return result["result"], result["source_documents"]
+
     
 # Main loop for testing
 if __name__ == "__main__":

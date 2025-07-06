@@ -1,75 +1,43 @@
 import os
 import streamlit as st
-from dotenv import load_dotenv
+from rag_setup import process_pdf_to_chunks, save_uploaded_file
+from qa_system import load_vectorstore, build_qa_chain, ask_question, rank_chunks_by_keyword
 
-from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
-from langchain_community.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import FAISS
-from langchain.prompts import PromptTemplate
-from langchain.chains import RetrievalQA
-import tempfile
+st.set_page_config(page_title="PDF Legal Q&A Bot", layout="centered")
 
-# Load Gemini key
-load_dotenv()
-os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
-
-st.set_page_config(page_title="PDF Legal Q&A Bot", page_icon="📄")
 st.title("📄 Upload Legal PDF & Ask Gemini")
 
 uploaded_file = st.file_uploader("Upload a legal PDF", type="pdf")
 
 if uploaded_file:
-    with st.spinner("Reading your PDF..."):
-        # Save file temporarily
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-            tmp.write(uploaded_file.read())
-            tmp_path = tmp.name
+    file_path = save_uploaded_file(uploaded_file)
 
-        # Load with LangChain
-        loader = PyPDFLoader(tmp_path)
-        documents = loader.load()
+    with st.spinner("Processing document..."):
+        chunks = process_pdf_to_chunks(file_path)
+        vectorstore = chunks  # optionally save to FAISS
+        qa_chain = build_qa_chain(vectorstore)
+        st.success("✅ PDF processed and embedded!")
 
-        # Split
-        splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-        chunks = splitter.split_documents(documents)
+    question = st.text_input("Ask your legal question")
 
-        # Embed
-        embedding = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-        vectorstore = FAISS.from_documents(chunks, embedding)
+    if st.button("Get Answer") and question:
+        # Get LLM answer + source docs
+        answer, sources = ask_question(qa_chain, question)
+        st.success(answer)
 
-        # Setup retriever + LLM
-        retriever = vectorstore.as_retriever()
-        llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0)
+        # Debug view: show raw source context
+        st.subheader("📄 Raw sources returned by Gemini:")
+        for doc in sources:
+            st.code(doc.page_content[:200])  # show only first 200 chars
 
-        prompt = PromptTemplate.from_template("""
-You are a legal assistant. Use the context to answer clearly.
+        # Rank chunks using keyword match
+        ranked_chunks = rank_chunks_by_keyword(sources, question)
 
-Context:
-{context}
-
-Question:
-{question}
-
-Answer:
-""")
-
-        qa_chain = RetrievalQA.from_chain_type(
-            llm=llm,
-            retriever=retriever,
-            return_source_documents=True,
-            chain_type_kwargs={"prompt": prompt}
-        )
-
-        # Ask questions
-        question = st.text_input("📝 Ask your legal question")
-
-        if st.button("Get Answer") and question:
-            with st.spinner("Thinking..."):
-                result = qa_chain.invoke({"query": question})
-                st.success(result["result"])
-
-                with st.expander("📄 Source Document Snippets"):
-                    for doc in result["source_documents"]:
-                        st.write(doc.page_content[:300])
-
+        # Show ranked results
+        with st.expander("📌 Ranked Source Document Snippets"):
+            if ranked_chunks:
+                for key, info in ranked_chunks.items():
+                    st.markdown(f"**{key} – Score: {info['score']}**")
+                    st.write(info["text"])
+            else:
+                st.info("No relevant content found in source documents.")

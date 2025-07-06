@@ -1,5 +1,10 @@
-.venv/
-__pycache__/
-faiss_index/
-*.pyc
 .env
+__pycache__/
+*.pyc
+*.pkl
+*.pdf
+*.faiss
+.vscode/
+.venv/
+faiss_index/
+data/sample_terms_conditions.pdf
