@@ -1,4 +1,6 @@
-def filter_chunks_by_keyword(chunks, key):
+from typing import List, Dict
+
+def filter_chunks_by_keyword(chunks: List[str], key:str) -> list[str]:
     """
     Filters a list of text chunks for those containing the keyword (case-insensitive).
     """
@@ -9,7 +11,7 @@ def filter_chunks_by_keyword(chunks, key):
     return result
 
 
-def score_chunks(chunks, key):
+def score_chunks(chunks: List[str], key: str) -> Dict[str, Dict[str, int]]:
     """
     Scores each chunk based on how many times the keyword appears.
     Returns a dictionary with chunk text and keyword frequency.
@@ -22,6 +24,16 @@ def score_chunks(chunks, key):
             "score": count
         }
     return score
+
+
+def top_chunks_by_score(scored_dict, top_n=3):
+    sorted_chunks = sorted(
+        scored_dict.items(),
+        key=lambda x: x[1]["score"],
+        reverse=True
+    )
+    return sorted_chunks[:top_n]
+
 
 
 chunks = [
