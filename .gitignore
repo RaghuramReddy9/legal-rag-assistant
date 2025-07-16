@@ -2,9 +2,6 @@
 __pycache__/
 *.pyc
 *.pkl
-*.pdf
-*.faiss
-.vscode/
-.venv/
+data/
 faiss_index/
 data/sample_terms.pdf
