@@ -7,4 +7,4 @@ __pycache__/
 .vscode/
 .venv/
 faiss_index/
-data/sample_terms_conditions.pdf
+data/sample_terms.pdf
