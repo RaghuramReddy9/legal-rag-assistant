@@ -1,7 +1,20 @@
-.env
+# Ignore Python virtual environment
+genai310/
+
+# Bytecode files
 __pycache__/
-*.pyc
-*.pkl
-data/
+*.py[cod]
+
+# Environment
+.env
+.env.*
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Ignore FAISS index if generated
 faiss_index/
-data/sample_terms.pdf
+
+# Ignore data uploads (optional)
+data/

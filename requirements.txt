@@ -1,8 +1,11 @@
 streamlit
-langchain
-langchain-community
-langchain-google-genai
-python-dotenv
-google-generativeai
-PyPDF2
+langchain==0.1.14
+langchain-community==0.0.19
 faiss-cpu
+sentence-transformers==2.2.2
+PyPDF2
+tiktoken
+torch==2.1.2
+numpy==1.26.4
+google-generativeai
+python-dotenv

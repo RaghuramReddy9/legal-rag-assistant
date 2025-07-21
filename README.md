@@ -1,93 +1,80 @@
-# ⚖️Gemini Legal Q&A Bot (RAG Pipeline)
+# ⚖️ AI Legal Assistant (Gemini + RAG + FAISS)
 
 This project sets up a **Retrieval-Augmented Generation (RAG)** pipeline that can **answer legal questions** based on a user-uploaded legal document.
 
+- Gemini Pro for LLM reasoning
+- HuggingFace Embeddings (`all-MiniLM-L6-v2`)
+- FAISS for vector search
+- LangChain for chaining + context retrieval
+- Streamlit UI
 ---
 
-##  Tech Stack
+##  Features
 
-- 🧠 **Google Gemini 1.5 Flash** – for embeddings + answers  
-- 🦜 **LangChain** – for LLM orchestration  
-- 📁 **FAISS** – for local vector database  
-- 🖼️ **Streamlit** – for interactive frontend (optional)
-
----
-
-##  How It Works
-
-1. `rag_setup.py` – Loads and chunks legal `.txt` file → creates embeddings → stores in FAISS  
-2. `qa_system.py` – Accepts questions, retrieves relevant chunks, gets Gemini-powered answer  
-3. `streamlit_app.py` – (Optional) Clean UI for querying your doc like ChatGPT  
+- Upload any legal PDF (Terms, Policies, Contracts)
+- Documents are chunked, embedded, and indexed locally
+- Ask legal questions in natural language
+- Gemini answers with context + cited chunks
 
 ---
 
-## 📁 Project Structure
+## Tech Stack
 
-legal-rag-bot/
-├── data/ # Holds legal .txt documents
-│ └── terms_and_conditions.txt
-├── faiss_index/ # Saved vector DB
-├── rag_setup.py # One-time setup script
-├── qa_system.py # Terminal-based QA script
-├── streamlit_app.py # UI app (optional)
-├── requirements.txt
-└── README.md
+| Layer       | Tool |
+|-------------|------|
+| Embeddings  | HuggingFace (`sentence-transformers`) |
+| Vector DB   | FAISS |
+| LLM Answer  | Gemini Pro (via `google-generativeai`) |
+| Framework   | LangChain |
+| Interface   | Streamlit |
+
 
 ---
 
 ## ⚙️ Setup & Run
 
-### 1. Create a virtual environment
+### 1. Clone the repo
+
+```bash
+git clone https://github.com/yourusername/legal-rag-bot
+cd legal-rag-bot
+```
+
+### 2. Create a virtual environment
 
 ```bash
 python -m venv .venv
 .venv\Scripts\activate   # or source .venv/bin/activate on macOS/Linux
 ```
 
-### 2. Install dependencies
+### 3. Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
+### 4. Add your Gemini API key
+Create a .env file:
+```bash
+GOOGLE_API_KEY=your-gemini-api-key
+```
+### 5. Run the app
+```bash
+streamlit run app.py
+```
 
-### 3. Add a legal file
-Put your `.txt` legal file (T&C, contract, etc.) in the `data/` folder.
 
-### 4. Set your API key
-
-Add your Gemini API key in a `.env` file:
-```bash
-GOOGLE_API_KEY=your-real-api-key
-```
-### 5. Build the vector index
-```bash
-python rag_setup.py
-```
-### 6. Ask questions (terminal)
-```bash
-python qa_system.py
-```
-### 7. Or launch the UI
-```bash
-streamlit run streamlit_app.py
-```
-##  Example Question
-```bash
-What are the refund terms mentioned in the agreement?
-```
 🔁 The bot finds and returns the answer with citations from your legal text.
 
-## Use Cases: 
+## Real-World Use Case
+This project simulates a legal assistant that helps users:
+```bash
+ 1. Understand refund policies
 
-    1. Customer policy search
+ 2. Clarify cancellation terms
 
-    2. HR document understanding
+ 3. Interpret contract clauses
 
-    3. Contract clause extraction
-
-    4. Compliance assistant
-
-    5. Internal knowledge agents
-
+Ideal for fintech, legaltech, SaaS onboarding, or customer service AI.
+```
 ## Note:
 
 Keep your `.env` file private. Do not commit API keys. Use `.gitignore` to keep secrets secure ✅
@@ -99,6 +86,10 @@ Keep your `.env` file private. Do not commit API keys. Use `.gitignore` to keep 
 - 🔗 [GitHub](https://github.com/RaghuramReddy9)
 - 💼 [LinkedIn](https://www.linkedin.com/in/raghuramreddy-ai)
 
+## 📎 License
+```bash
+MIT — Free to use and adapt.
+```
 
 
 

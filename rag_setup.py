@@ -1,43 +1,22 @@
-import os
-from langchain_community.document_loaders import PyPDFLoader
+from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_community.vectorstores import FAISS
+from langchain.vectorstores import FAISS
+from langchain.embeddings import HuggingFaceEmbeddings
+import os
 
-def load_and_chunk_pdf(file_path, chunk_size=500, chunk_overlap=50):
-    # Load PDF using LangChain PyPDFLoader
+def load_and_chunk_pdf(file_path):
     loader = PyPDFLoader(file_path)
-    documents = loader.load()
+    pages = loader.load()
 
-    # Split into chunks for semantic search
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size,
-        chunk_overlap=chunk_overlap
+        chunk_size=500,
+        chunk_overlap=50
     )
-    chunks = splitter.split_documents(documents)
 
+    chunks = splitter.split_documents(pages)
     return chunks
 
-
-def embed_and_save(chunks, index_path="faiss_index/"):
-    # Create Embeddings for each chunk
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-
-    # Create FAISS vector index
-    vectorstore = FAISS.from_documents(chunks, embeddings)
-
-    # Save FAISS index to disk
-    vectorstore.save_local(index_path)
-    print(f"✅ FAISS index saved to: {index_path}")
-
-if __name__ == "__main__":
-    file_path = "data/sample_terms.pdf"
-    if not os.path.exists(file_path):
-        print("⚠️ File not found.")
-    else:
-        chunks = load_and_chunk_pdf(file_path)
-        print(f"✅ Chunks Ready: {len(chunks)}")
-        print("🔍 Preview:\n", chunks[0].page_content[:300])
-
-        embed_and_save(chunks) 
-
+def embed_and_save(chunks):
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    db = FAISS.from_documents(chunks, embeddings)
+    db.save_local("faiss_index")
