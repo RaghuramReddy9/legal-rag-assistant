@@ -41,10 +41,6 @@ Powered by **Gemini 2.0 Flash**, this assistant combines **semantic search (FAIS
 
 ---
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 1e4d0c71abb46bfde47260820232527d64361430
 ### ⚙️ Environment Variables
 
 Create a file called `.env` or use the shared template `.env.example`.
