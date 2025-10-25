@@ -1,4 +1,11 @@
 # ⚖️ AI Legal Assistant (Gemini 2.0 Flash + LangChain + FAISS)
+![Python](https://img.shields.io/badge/Python-3.10+-blue)
+![LangChain](https://img.shields.io/badge/LangChain-Framework-brightgreen)
+![Gemini](https://img.shields.io/badge/Gemini-2.0--Flash-orange)
+![FAISS](https://img.shields.io/badge/Vector%20DB-FAISS-blueviolet)
+![Streamlit](https://img.shields.io/badge/UI-Streamlit-red)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow)
+
 
 This project implements a **Retrieval-Augmented Generation (RAG)** pipeline that can **answer legal or policy-based questions** using uploaded documents such as contracts, refund policies, or terms of service.
 
