@@ -1,5 +1,8 @@
 # Ignore Python virtual environment
-genai310/
+.venv/
+venv/
+uv.lock
+
 
 # Bytecode files
 __pycache__/
