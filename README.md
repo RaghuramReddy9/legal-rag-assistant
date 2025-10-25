@@ -36,6 +36,12 @@ Powered by **Gemini 2.0 Flash**, this assistant combines **semantic search (FAIS
 
 ---
 
+##  System Architecture
+![Architecture](assets/architecture.png)
+
+---
+
+
 ### ⚙️ Environment Variables
 
 Create a file called `.env` or use the shared template `.env.example`.
