@@ -2,7 +2,7 @@ import os
 import asyncio
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableMap, RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from llm import get_llm
