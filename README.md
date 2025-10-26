@@ -13,6 +13,10 @@ Powered by **Gemini 2.0 Flash**, this assistant combines **semantic search (FAIS
 
 ---
 
+**Live Demo:** [https://legal-rag-assistant.streamlit.app](https://legal-rag-assistant.streamlit.app)
+
+---
+
 ##  Features
 - Upload and process any legal PDF (e.g., contracts, terms of service, GDPR)
 - Vector search with **FAISS + MiniLM embeddings**
