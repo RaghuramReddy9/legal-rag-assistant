@@ -1,10 +1,31 @@
+# === Core Frameworks ===
 langchain
-langchain-core
-langchain-google-genai
 langchain-community
-google-generativeai
-google-ai-generativelanguage
+langchain-google-genai
+langchain-huggingface
+
+
+# === Vector Search & Embeddings ===
 faiss-cpu
-python-dotenv
+sentence-transformers
+numpy
+
+# === Web Framework & UI ===
 streamlit
+
+# === PDF & Data Utilities ===
 pypdf
+python-dotenv
+
+# === Google Gemini SDK ===
+google-generativeai
+
+# === Optional Utilities ===
+tqdm
+requests
+
+# === Hugging Face Support ===
+huggingface-hub
+
+# === General Purpose Helpers ===
+typing-extensions

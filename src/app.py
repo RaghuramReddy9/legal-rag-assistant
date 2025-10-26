@@ -1,44 +1,86 @@
-import os
 import streamlit as st
-from rag_setup import load_and_chunk_pdf, embed_and_save
-from qa_system import load_vectorstore, build_qa_chain, ask_question
+from rag_setup import build_vector_index
+from qa_system import load_vectorstore, build_streaming_rag_chain, get_sources
+import asyncio
+import os
 
-st.set_page_config(page_title="Legal RAG Bot", layout="wide")
-st.title("📄 AI Legal Assistant (Gemini + RAG + FAISS)")
+st.set_page_config(page_title="AI Legal Assistant", page_icon="⚖️", layout="centered")
 
-# -------- File Upload ----------
-st.sidebar.subheader("📄 Upload Your Legal PDF")
-uploaded_file = st.sidebar.file_uploader("Upload a legal terms PDF", type="pdf")
+# sidebar
+st.sidebar.title("📄 Upload Legal Document")
+uploaded_file = st.sidebar.file_uploader("Upload a PDF file", type=["pdf"])
 
-if uploaded_file:
-    with st.spinner("🔄 Processing PDF..."):
-        save_path = os.path.join("data", uploaded_file.name)
-        with open(save_path, "wb") as f:
-            f.write(uploaded_file.getbuffer())
-        chunks = load_and_chunk_pdf(save_path)
-        embed_and_save(chunks)
-        st.session_state.qa_chain = build_qa_chain(load_vectorstore())
-        st.success("✅ PDF indexed and ready for questions!")
+DATA_DIR = "data"
+PDF_PATH = os.path.join(DATA_DIR, "uploaded_legal_doc.pdf")
 
-# -------- QA Panel -------------
-st.sidebar.header("🔍 Legal Search")
-question = st.text_input("Ask your legal question:")
+# Upload and process PDF
+if uploaded_file is not None:
+    # Save uploaded file
+    with open(PDF_PATH, "wb") as f:
+        f.write(uploaded_file.read())
+    st.sidebar.success("✅ PDF uploaded successfully!")
 
-if "qa_chain" not in st.session_state:
-    try:
-        st.session_state.qa_chain = build_qa_chain(load_vectorstore())
-    except:
-        st.warning("📂 Upload a PDF first to build the chatbot.")
-        st.stop()
+    # Build vector index
+    with st.spinner("Building knowledge base..."):
+        build_vector_index(pdf_path=PDF_PATH, index_path="data/faiss_index")
+        st.sidebar.success("✅ Document processed and indexed!")
 
-if st.button("Submit") and question:
-    with st.spinner("🤔 Thinking..."):
-        answer, sources = ask_question(st.session_state.qa_chain, question)
-        st.markdown("### 💡 Answer")
-        st.success(answer)
+# Session state to chat history
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
 
-        if sources:
-            st.markdown("### 📄 Source Context")
-            for i, doc in enumerate(sources):
-                st.markdown(f"**Chunk {i+1}:**")
-                st.write(doc.page_content[:500])
+# Title and Input
+st.title("⚖️ AI Legal Assistant (Gemini 2.0 Flash + RAG)")
+st.markdown("Ask questions about your uploaded legal document.")
+
+# chat clearing
+if st.button("🧹Clear Chat"):
+    st.session_state.chat_history = []
+    st.rerun()
+
+# Display chat history
+for chat in st.session_state.chat_history:
+    with st.chat_message("user"):
+        st.markdown(chat["user"])
+    with st.chat_message("assistant"):
+        st.markdown(chat["bot"])    
+
+# Chat input
+user_query = st.chat_input("💬 Ask a legal question:")
+
+# when user sends message
+if user_query:
+    with st.chat_message("user"):
+        st.markdown(user_query)
+
+    if not os.path.exists("data/faiss_index"):
+        st.error("Please upload and index a PDF first.")
+    else:
+        vectorstore = load_vectorstore("data/faiss_index")
+        rag_chain = build_streaming_rag_chain(vectorstore)
+
+        with st.chat_message("assistant"):
+            placeholder = st.empty()
+            answer_buffer = []
+
+            async def display_stream():
+                async for chunk in rag_chain.astream(user_query):
+                    answer_buffer.append(chunk)
+                    placeholder.markdown("".join(answer_buffer))
+
+            asyncio.run(display_stream())
+            st.success("✅ Response complete!")
+
+            #  Save message in memory 
+            full_answer = "".join(answer_buffer)
+            st.session_state.chat_history.append({
+                "user": user_query,
+                "bot": full_answer
+            })
+
+            # Sources display
+            st.markdown("### 📚 Sources Used:")
+            sources = get_sources(vectorstore, user_query)
+            for i, src in enumerate(sources, start=1):
+                with st.expander(f"Source {i}"):
+                    st.write(src)

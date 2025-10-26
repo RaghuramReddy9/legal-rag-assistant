@@ -1,25 +1,42 @@
-import os
-from dotenv import load_dotenv
+import os 
 from langchain_community.document_loaders import PyPDFLoader
-from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
 
-load_dotenv()
+# config 
+DATA_DIR = "data"
+PDF_PATH = os.path.join(DATA_DIR, "software-license-agreement.pdf")  # any document
+INDEX_PATH = os.path.join(DATA_DIR, "faiss_index")
 
-def load_and_chunk_pdf(file_path: str):
-    loader = PyPDFLoader(file_path)
-    pages = loader.load()
-    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-    return splitter.split_documents(pages)
+def build_vector_index(pdf_path=PDF_PATH, index_path=INDEX_PATH):
+    """
+    1. load a pdf
+    2. split it into
+    3. convert each chunk into embeddings
+    4. save a FAISS index to disk
+    """
+    print(f"Loading PDF from {pdf_path}...")
+    loader = PyPDFLoader(pdf_path)
+    documents = loader.load()
 
-def embed_and_save(chunks, index_path="faiss_index"):
+    print("Splitting document into chunks...")
+    splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=50)
+    chunks = splitter.split_documents(documents)
+
+    print("Generating embeddings using MiniLM model...")
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-    vectorstore = FAISS.from_documents(chunks, embeddings)
-    vectorstore.save_local(index_path)
 
-# Run once to build FAISS
+    print("Building FAISS vector store...")
+    vectorestore = FAISS.from_documents(chunks, embeddings)
+
+    print(f"Saving FAISS index to {index_path}...")
+    vectorestore.save_local(index_path)
+
+    print("Vector store built and saved successfully.")
+    return vectorestore
+
 if __name__ == "__main__":
-    pdf_path = "data/legal_contract.pdf"
-    chunks = load_and_chunk_pdf(pdf_path)
-    embed_and_save(chunks)
+    build_vector_index()
+
+

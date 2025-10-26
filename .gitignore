@@ -1,23 +1,76 @@
-# Ignore Python virtual environment
-.venv/
-venv/
-uv.lock
 
+# PYTHON & ENVIRONMENT
 
-# Bytecode files
 __pycache__/
 *.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+.eggs/
+build/
+dist/
+*.spec
 
-# Environment
+
+# VIRTUAL ENVIRONMENTS
+
+.venv/
+venv/
+env/
+ENV/
+.ipynb_checkpoints/
+
+
+# SECRETS & CONFIGS
+
 .env
 .env.*
+*.key
+*.pem
+*.token
+config.json
+credentials.json
 
-# System files
-.DS_Store
+
+# DATA & GENERATED FILES
+
+data/legal_index/
+data/*.faiss
+data/*.pkl
+data/*.bin
+data/*.json
+data/*.csv
+data/*.zip
+data/*.log
+data/*.tmp
+
+
+# CACHE & LOG FILES
+
+logs/
+*.log
+*.tmp
+*.bak
+*.swp
+*.DS_Store
 Thumbs.db
 
-# Ignore FAISS index if generated
-faiss_index/
 
-# Ignore data uploads (optional)
-data/
+# STREAMLIT
+
+.streamlit/
+.streamlit/secrets.toml
+
+
+# SCREENSHOTS (optional)
+
+screenshots/*.png
+screenshots/*.jpg
+
+# MISC
+
+*.ipynb_checkpoints/
+test_results/
+*.sqlite3
