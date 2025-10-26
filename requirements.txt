@@ -4,10 +4,11 @@ python-dotenv
 
 # === LLM & RAG Components ===
 langchain
+langchain-Core
 langchain-community
 langchain-google-genai
 langchain-huggingface
-langchain-core
+langchain-text-splitters
 
 # === Embeddings & Vector Store ===
 faiss-cpu
