@@ -1,31 +1,22 @@
 # === Core Frameworks ===
+streamlit
+python-dotenv
+
+# === LLM & RAG Components ===
 langchain
 langchain-community
 langchain-google-genai
 langchain-huggingface
 
-
-# === Vector Search & Embeddings ===
+# === Embeddings & Vector Store ===
 faiss-cpu
 sentence-transformers
-numpy
 
-# === Web Framework & UI ===
-streamlit
-
-# === PDF & Data Utilities ===
+# === PDF Loading & Text Processing ===
 pypdf
-python-dotenv
+fpdf
 
-# === Google Gemini SDK ===
-google-generativeai
-
-# === Optional Utilities ===
+# === Utilities ===
 tqdm
-requests
-
-# === Hugging Face Support ===
-huggingface-hub
-
-# === General Purpose Helpers ===
-typing-extensions
+numpy
+pandas
